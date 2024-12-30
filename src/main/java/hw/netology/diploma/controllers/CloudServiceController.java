@@ -16,7 +16,7 @@ public class CloudServiceController {
         this.repository = repository;
     }
 
-    @GetMapping("")
-    public
+    //@GetMapping("")
+    //public
 }
 
