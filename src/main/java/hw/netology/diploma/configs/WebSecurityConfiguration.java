@@ -1,11 +1,14 @@
 package hw.netology.diploma.configs;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,6 +41,13 @@ public class WebSecurityConfiguration {
     @Bean
     public UserDetailsService jdbcUserDetailsService() {
         JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
+        User.UserBuilder user = User.builder();
+        users.createUser(user.username("admin")
+                .password("admin")
+                .roles("ADMIN")
+                .build());
+        System.out.println("Admin was created");
         return users;
     }
+
 }

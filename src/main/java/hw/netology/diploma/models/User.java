@@ -7,26 +7,36 @@ package hw.netology.diploma.models;
 //last_name varchar(50),
 //birthday date
 
+import hw.netology.diploma.Authority;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name="Users", schema = "public")
-public class User {
+public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @Column(nullable = false, columnDefinition = "bigserial")
+    @JdbcTypeCode(SqlTypes.BIGINT)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @Column(name = "login", nullable = true, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
-    private String login;
+    @Size(min = 5, message = "Не меньше пяти знаков")
+    private String username;
 
-    @Column(name = "password", nullable = true, unique = true)
+    @Column(name = "password", nullable = false, unique = true)
+    @Size(min = 5, message = "Не меньше пяти знаков")
     //@JdbcTypeCode(SqlTypes.BLOB)
     private String password;
 
@@ -41,6 +51,15 @@ public class User {
     @Column(name = "birthday")
     @JdbcTypeCode(SqlTypes.DATE)
     private Date birthday;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Authority> authorities;
+
+    @Column(name = "enabled")
+    private boolean enabled;
+
+    public User() {
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -63,12 +82,10 @@ public class User {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
-    }
 
-    public void setLogin(String login) {
-        this.login = login;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     public String getPassword() {
@@ -78,6 +95,16 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
 
     public String getName() {
         return name;
@@ -101,5 +128,9 @@ public class User {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
     }
 }
